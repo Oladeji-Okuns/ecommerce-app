@@ -9,7 +9,6 @@ RUN npm install
 
 # Copy the source files
 COPY src ./src
-COPY public ./public # If you have a public folder for static assets
 
 # Build the application
 RUN npm run build
