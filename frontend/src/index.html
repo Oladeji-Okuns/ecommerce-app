@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eunivo - Your One-Stop Shopping Destination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        primaryHover: '#4A49B8',
+                        secondary: '#F9FAFB',
+                        darkBg: '#181818',
+                        darkSecondary: '#262626',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #444;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ccc;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .dark .product-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-darkBg text-gray-800 dark:text-gray-200 min-h-screen flex flex-col transition-colors duration-200">
+    <!-- Header -->
+    <header class="bg-white dark:bg-darkBg shadow-sm sticky top-0 z-50 transition-colors duration-200">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+                <div class="flex items-center justify-between w-full md:w-auto">
+                    <a href="#" class="text-2xl font-bold text-primary flex items-center" onclick="navigateTo('home')">
+                        <i class="fas fa-shopping-bag mr-2"></i>
+                        <span>Eunivo</span>
+                    </a>
+                    <button id="mobile-menu-button" class="md:hidden text-gray-600 dark:text-gray-300 focus:outline-none" aria-label="Open mobile menu">
+                        <i class="fas fa-bars text-xl" aria-hidden="true"></i>
+                        <span class="sr-only">Open mobile menu</span>
+                    </button>
+
+                </div>
+                
+                <div class="flex-1 md:mx-10 w-full md:w-auto">
+                    <div class="relative">
+                        <input id="search-input" type="text" placeholder="Search products..." 
+                               class="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary dark:bg-darkSecondary text-base">
+                        <button id="search-button" class="absolute right-0 top-0 mt-2 mr-4 text-gray-600 dark:text-gray-400" aria-label="Search">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                            <span class="sr-only">Search</span>
+                        </button>
+
+                    </div>
+                </div>
+                
+                <div id="nav-links" class="hidden md:flex flex-col md:flex-row items-center w-full md:w-auto space-y-3 md:space-y-0 md:space-x-6">
+                    <div class="flex items-center space-x-4">
+                        <button id="theme-toggle" class="text-gray-600 dark:text-gray-300 focus:outline-none" aria-label="Toggle theme">
+                            <i class="fas fa-moon dark:hidden" aria-hidden="true"></i>
+                            <i class="fas fa-sun hidden dark:block" aria-hidden="true"></i>
+                            <span class="sr-only">Toggle theme</span>
+                        </button>
+
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition" onclick="navigateTo('account')" aria-label="Go to account page">
+                            <i class="fas fa-user-circle text-xl" aria-hidden="true"></i>
+                            <span class="sr-only">Go to account</span>
+                        </a>
+
+                            <i class="fas fa-user-circle text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition relative" onclick="navigateTo('cart')">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                        </a>
+                    </div>
+                    <div class="flex space-x-4 w-full md:w-auto">
+                        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-darkSecondary transition" onclick="navigateTo('home')">Home</a>
+                        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-darkSecondary transition" onclick="navigateTo('products', {category: 'all'})">All Products</a>
+                        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-darkSecondary transition" onclick="navigateTo('orders')">Orders</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="md:hidden mt-3 pb-3 hidden">
+                <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-darkSecondary transition" onclick="navigateTo('home')">Home</a>
+                <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-darkSecondary transition" onclick="navigateTo('products', {category: 'all'})">All Products</a>
+                <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-darkSecondary transition" onclick="navigateTo('orders')">Orders</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="flex-grow container mx-auto px-4 py-6">
+        <!-- Content will be loaded here by JS -->
+        <div class="flex justify-center items-center h-64">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-darkSecondary py-8 transition-colors duration-200">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Eunivo</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Your one-stop shopping destination for quality products at competitive prices.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition">Returns & Refunds</a></li>
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition">FAQ</a></li>
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition">Shipping Info</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">My Account</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition" onclick="navigateTo('account')">Account Settings</a></li>
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition" onclick="navigateTo('orders')">Orders History</a></li>
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition">Wishlist</a></li>
+                        <li><a href="#" class="hover:text-primary dark:hover:text-primary transition">Notifications</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4 text-gray-600 dark:text-gray-400">
+                        <a href="#" class="hover:text-primary dark:hover:text-primary transition" aria-label="Visit our Facebook page">
+                            <i class="fab fa-facebook-f text-xl" aria-hidden="true"></i>
+                            <span class="sr-only">Visit our Facebook page</span>
+                        </a>
+                        <a href="#" class="hover:text-primary dark:hover:text-primary transition" aria-label="Visit our Twitter page">
+                            <i class="fab fa-twitter text-xl" aria-hidden="true"></i>
+                            <span class="sr-only">Visit our Twitter page</span>
+                        </a>
+                        <a href="#" class="hover:text-primary dark:hover:text-primary transition" aria-label="Visit our Instagram page">
+                            <i class="fab fa-instagram text-xl" aria-hidden="true"></i>
+                            <span class="sr-only">Visit our Instagram page</span>
+                        </a>
+                        <a href="#" class="hover:text-primary dark:hover:text-primary transition" aria-label="Visit our Pinterest page">
+                            <i class="fab fa-pinterest text-xl" aria-hidden="true"></i>
+                            <span class="sr-only">Visit our Pinterest page</span>
+                        </a>
+
+                    </div>
+                    <div class="mt-4">
+                        <h4 class="text-sm font-semibold mb-2">Subscribe to Newsletter</h4>
+                        <div class="flex">
+                            <input type="email" placeholder="Your email" class="flex-grow p-2 rounded-l text-gray-800 dark:text-gray-200 dark:bg-darkBg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                            <button class="bg-primary hover:bg-primaryHover text-white py-2 px-4 rounded-r transition">
+                                Subscribe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 dark:border-gray-700 mt-8 pt-6 text-center text-gray-600 dark:text-gray-400">
+                <p>&copy; 2023 Eunivo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg transform transition-all duration-300 opacity-0 translate-y-8 z-50">
+        <span id="toast-message">Item added to cart</span>
+    </div>
+
+    <script>
+        // Data Storage
+        const PRODUCTS = [
+            {
+                id: 1,
+                name: "Premium Wireless Headphones",
+                price: 149.99,
+                category: "electronics",
+                rating: 4.5,
+                reviewCount: 128,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Ccircle cx='100' cy='100' r='50' fill='%235D5CDE'/%3E%3Crect x='70' y='40' width='60' height='120' rx='10' fill='%23333'/%3E%3Ccircle cx='50' cy='100' r='30' fill='%23444'/%3E%3Ccircle cx='150' cy='100' r='30' fill='%23444'/%3E%3C/svg%3E",
+                description: "Experience premium sound quality with our wireless headphones. Features active noise cancellation, 30-hour battery life, and comfortable over-ear design.",
+                details: {
+                    brand: "AudioPro",
+                    connectivity: "Bluetooth 5.0",
+                    batteryLife: "30 hours",
+                    color: "Midnight Black",
+                    warranty: "2 years"
+                },
+                inStock: true,
+                discount: 15,
+                featured: true
+            },
+            {
+                id: 2,
+                name: "Ultra HD Smart TV - 55\"",
+                price: 699.99,
+                category: "electronics",
+                rating: 4.7,
+                reviewCount: 243,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Crect x='20' y='40' width='160' height='100' rx='2' fill='%23111'/%3E%3Crect x='25' y='45' width='150' height='90' rx='1' fill='%235D5CDE'/%3E%3Crect x='70' y='140' width='60' height='10' fill='%23333'/%3E%3Crect x='60' y='150' width='80' height='10' fill='%23444'/%3E%3C/svg%3E",
+                description: "Transform your home entertainment with our 55\" Ultra HD Smart TV. Featuring crystal clear 4K resolution, smart functionality, and a sleek design.",
+                details: {
+                    brand: "VisionTech",
+                    resolution: "4K Ultra HD",
+                    screenSize: "55 inches",
+                    refreshRate: "120Hz",
+                    warranty: "3 years"
+                },
+                inStock: true,
+                discount: 0,
+                featured: true
+            },
+            {
+                id: 3,
+                name: "Professional Chef's Knife Set",
+                price: 129.99,
+                category: "home",
+                rating: 4.8,
+                reviewCount: 89,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Cpath d='M20,100 L180,100 L160,120 L40,120 Z' fill='%23855'/%3E%3Cpath d='M30,100 L40,90 L160,90 L170,100' fill='%23333'/%3E%3Cpath d='M160,90 L30,90 L20,70 L150,70 Z' fill='%23bbb'/%3E%3C/svg%3E",
+                description: "Elevate your cooking with our professional-grade chef's knife set. Includes 7 precision-crafted knives made from high-carbon stainless steel.",
+                details: {
+                    brand: "CulinaryMaster",
+                    material: "High-carbon stainless steel",
+                    pieces: "7-piece set",
+                    handleMaterial: "Pakkawood",
+                    warranty: "Lifetime"
+                },
+                inStock: true,
+                discount: 0,
+                featured: false
+            },
+            {
+                id: 4,
+                name: "Premium Yoga Mat",
+                price: 59.99,
+                category: "sports",
+                rating: 4.6,
+                reviewCount: 75,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Crect x='40' y='40' width='120' height='120' rx='5' fill='%235D5CDE'/%3E%3Crect x='50' y='50' width='100' height='100' rx='5' fill='%234A49B8' fill-opacity='0.7'/%3E%3C/svg%3E",
+                description: "Find your balance with our premium yoga mat. Features non-slip surface, eco-friendly materials, and perfect cushioning for all yoga styles.",
+                details: {
+                    brand: "ZenFlex",
+                    material: "Eco-friendly TPE",
+                    thickness: "6mm",
+                    dimensions: "72\" x 24\"",
+                    weight: "2.5 lbs"
+                },
+                inStock: true,
+                discount: 10,
+                featured: false
+            },
+            {
+                id: 5,
+                name: "Designer Leather Handbag",
+                price: 249.99,
+                category: "fashion",
+                rating: 4.9,
+                reviewCount: 62,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Cpath d='M50,70 L150,70 L160,140 L40,140 Z' fill='%23b87333'/%3E%3Cpath d='M60,70 Q60,50 100,50 Q140,50 140,70' fill='none' stroke='%23b87333' stroke-width='10'/%3E%3Ccircle cx='100' cy='90' r='10' fill='%23ddd'/%3E%3C/svg%3E",
+                description: "Make a statement with our designer leather handbag. Crafted from premium full-grain leather with elegant gold hardware and multiple compartments.",
+                details: {
+                    brand: "LuxeStyle",
+                    material: "Full-grain leather",
+                    dimensions: "12\" x 9\" x 4\"",
+                    color: "Cognac",
+                    hardware: "Gold-tone"
+                },
+                inStock: true,
+                discount: 0,
+                featured: true
+            },
+            {
+                id: 6,
+                name: "Automatic Espresso Machine",
+                price: 499.99,
+                category: "home",
+                rating: 4.7,
+                reviewCount: 103,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Crect x='50' y='60' width='100' height='80' rx='5' fill='%23333'/%3E%3Crect x='60' y='70' width='80' height='40' rx='2' fill='%23666'/%3E%3Ccircle cx='80' cy='130' r='10' fill='%23999'/%3E%3Ccircle cx='120' cy='130' r='10' fill='%23999'/%3E%3Crect x='75' y='40' width='10' height='20' fill='%23333'/%3E%3Crect x='115' y='40' width='10' height='20' fill='%23333'/%3E%3C/svg%3E",
+                description: "Enjoy barista-quality coffee at home with our automatic espresso machine. Features 15-bar pressure system, built-in grinder, and milk frother.",
+                details: {
+                    brand: "BrewMaster",
+                    pressure: "15 bar",
+                    capacity: "1.8L water tank",
+                    programs: "5 programmable settings",
+                    warranty: "2 years"
+                },
+                inStock: true,
+                discount: 5,
+                featured: false
+            },
+            {
+                id: 7,
+                name: "Ultra-Slim Laptop",
+                price: 1299.99,
+                category: "electronics",
+                rating: 4.8,
+                reviewCount: 156,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Cpath d='M40,60 L160,60 L160,130 L40,130 Z' fill='%23888'/%3E%3Cpath d='M39,131 L161,131 L171,150 L29,150 Z' fill='%23555'/%3E%3Crect x='45' y='65' width='110' height='60' fill='%235D5CDE'/%3E%3Crect x='80' y='140' width='40' height='5' rx='2' fill='%23333'/%3E%3C/svg%3E",
+                description: "Power and portability combine in our ultra-slim laptop. Features the latest processor, stunning display, and all-day battery life in a lightweight design.",
+                details: {
+                    brand: "TechPro",
+                    processor: "11th Gen Intel Core i7",
+                    memory: "16GB RAM",
+                    storage: "512GB SSD",
+                    display: "14\" 4K OLED"
+                },
+                inStock: true,
+                discount: 0,
+                featured: true
+            },
+            {
+                id: 8,
+                name: "Smart Fitness Watch",
+                price: 179.99,
+                category: "electronics",
+                rating: 4.6,
+                reviewCount: 211,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Crect x='70' y='50' width='60' height='100' rx='10' fill='%23333'/%3E%3Crect x='75' y='55' width='50' height='90' rx='8' fill='%235D5CDE'/%3E%3Cpath d='M70,80 L60,90 L60,110 L70,120' fill='none' stroke='%23333' stroke-width='5'/%3E%3Cpath d='M130,80 L140,90 L140,110 L130,120' fill='none' stroke='%23333' stroke-width='5'/%3E%3C/svg%3E",
+                description: "Track your fitness journey with our smart fitness watch. Monitors heart rate, sleep, activity, and more with a 7-day battery life and water-resistant design.",
+                details: {
+                    brand: "FitTech",
+                    waterResistance: "5 ATM",
+                    batteryLife: "7 days",
+                    sensors: "Heart rate, GPS, Accelerometer",
+                    compatibility: "iOS & Android"
+                },
+                inStock: true,
+                discount: 20,
+                featured: false
+            },
+            {
+                id: 9,
+                name: "Luxury Scented Candle Set",
+                price: 49.99,
+                category: "home",
+                rating: 4.8,
+                reviewCount: 58,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Ccircle cx='70' cy='100' r='30' fill='%23ddd'/%3E%3Ccircle cx='130' cy='100' r='30' fill='%23ddd'/%3E%3Crect x='67' y='70' width='6' height='20' fill='%23555'/%3E%3Crect x='127' y='70' width='6' height='20' fill='%23555'/%3E%3Crect x='67' y='70' width='6' height='5' fill='%23f44'/%3E%3Crect x='127' y='70' width='6' height='5' fill='%23f44'/%3E%3C/svg%3E",
+                description: "Transform your space with our luxury scented candle set. Includes 3 premium soy wax candles in elegant glass jars with wooden lids.",
+                details: {
+                    brand: "AromaLuxe",
+                    material: "100% soy wax",
+                    burnTime: "45 hours each",
+                    scents: "Vanilla, Sandalwood, Lavender",
+                    count: "Set of 3"
+                },
+                inStock: true,
+                discount: 0,
+                featured: false
+            },
+            {
+                id: 10,
+                name: "Professional DSLR Camera",
+                price: 899.99,
+                category: "electronics",
+                rating: 4.9,
+                reviewCount: 74,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Cpath d='M50,70 L150,70 L150,130 L50,130 Z' fill='%23222'/%3E%3Ccircle cx='100' cy='100' r='25' fill='%23444'/%3E%3Ccircle cx='100' cy='100' r='20' fill='%23666'/%3E%3Ccircle cx='100' cy='100' r='10' fill='%23888'/%3E%3Crect x='140' y='85' width='20' height='30' fill='%23222'/%3E%3Crect x='120' y='80' width='10' height='10' fill='%23444'/%3E%3C/svg%3E",
+                description: "Capture stunning photos and videos with our professional DSLR camera. Features a high-resolution sensor, 4K video capability, and exceptional low-light performance.",
+                details: {
+                    brand: "OptiMax",
+                    sensor: "24.2MP Full Frame",
+                    iso: "100-51,200",
+                    video: "4K 60fps",
+                    connectivity: "Wi-Fi, Bluetooth"
+                },
+                inStock: true,
+                discount: 10,
+                featured: true
+            },
+            {
+                id: 11,
+                name: "Designer Sunglasses",
+                price: 159.99,
+                category: "fashion",
+                rating: 4.7,
+                reviewCount: 42,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Cpath d='M40,100 L70,100 Q85,100 100,100 Q115,100 130,100 L160,100' fill='none' stroke='%23333' stroke-width='5'/%3E%3Cellipse cx='70' cy='100' rx='20' ry='15' fill='%23555'/%3E%3Cellipse cx='130' cy='100' rx='20' ry='15' fill='%23555'/%3E%3C/svg%3E",
+                description: "Complete your look with our designer sunglasses. Features premium materials, UV protection, and a timeless design that complements any outfit.",
+                details: {
+                    brand: "VisionStyle",
+                    material: "Acetate frame",
+                    lensType: "Polarized",
+                    protection: "100% UVA/UVB",
+                    includes: "Leather case & cleaning cloth"
+                },
+                inStock: true,
+                discount: 0,
+                featured: false
+            },
+            {
+                id: 12,
+                name: "Ergonomic Office Chair",
+                price: 249.99,
+                category: "home",
+                rating: 4.8,
+                reviewCount: 95,
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3Crect x='70' y='50' width='60' height='80' rx='5' fill='%235D5CDE'/%3E%3Crect x='70' y='130' width='60' height='10' fill='%23333'/%3E%3Cpath d='M80,140 L80,160 M120,140 L120,160' fill='none' stroke='%23333' stroke-width='5'/%3E%3Cpath d='M60,100 L70,100 M130,100 L140,100' fill='none' stroke='%23333' stroke-width='5'/%3E%3C/svg%3E",
+                description: "Work in comfort with our ergonomic office chair. Features adjustable height and lumbar support, breathable mesh back, and premium cushioning.",
+                details: {
+                    brand: "ErgoComfort",
+                    material: "Mesh back, fabric seat",
+                    maxWeight: "300 lbs",
+                    adjustments: "Height, tilt, armrest, lumbar",
+                    warranty: "5 years"
+                },
+                inStock: true,
+                discount: 15,
+                featured: false
+            }
+        ];
+
+        const CATEGORIES = [
+            { id: "electronics", name: "Electronics", icon: "fa-laptop" },
+            { id: "fashion", name: "Fashion & Apparel", icon: "fa-tshirt" },
+            { id: "home", name: "Home & Kitchen", icon: "fa-home" },
+            { id: "sports", name: "Sports & Outdoors", icon: "fa-basketball-ball" }
+        ];
+
+        // State
+        let cart = [];
+        let currentUser = null;
+        let currentPage = 'home';
+        let pageParams = {};
+
+        // Initialize theme based on user preference
+        function initTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                if (event.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            });
+        }
+
+        // Toggle theme
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+            
+            const navLinks = document.getElementById('nav-links');
+            navLinks.classList.toggle('hidden');
+        });
+
+        // Search functionality
+        document.getElementById('search-button').addEventListener('click', () => {
+            const searchTerm = document.getElementById('search-input').value.trim();
+            if (searchTerm) {
+                navigateTo('products', { search: searchTerm });
+            }
+        });
+
+        document.getElementById('search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const searchTerm = document.getElementById('search-input').value.trim();
+                if (searchTerm) {
+                    navigateTo('products', { search: searchTerm });
+                }
+            }
+        });
+
+        // Navigate to different pages
+        function navigateTo(page, params = {}) {
+            currentPage = page;
+            pageParams = params;
+            loadPage();
+            window.scrollTo(0, 0);
+            
+            // Close mobile menu when navigating
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+                document.getElementById('nav-links').classList.add('hidden');
+            }
+            
+            return false; // Prevent default link behavior
+        }
+
+        // Show notification toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toast.className = 'fixed bottom-4 right-4 px-6 py-3 rounded shadow-lg transform transition-all duration-300 z-50';
+            
+            // Set color based on type
+            if (type === 'success') {
+                toast.classList.add('bg-green-500', 'text-white');
+            } else if (type === 'error') {
+                toast.classList.add('bg-red-500', 'text-white');
+            } else if (type === 'info') {
+                toast.classList.add('bg-blue-500', 'text-white');
+            }
+            
+            toastMessage.textContent = message;
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-8');
+            }, 10);
+            
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-8');
+            }, 3000);
+        }
+
+        // Cart Management
+        function addToCart(productId, quantity = 1) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: quantity
+                });
+            }
+            
+            updateCartCount();
+            showToast(`Added ${product.name} to cart`);
+            
+            if (currentPage === 'cart') {
+                loadPage(); // Refresh cart page if we're on it
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            
+            if (currentPage === 'cart') {
+                loadPage(); // Refresh cart page
+            }
+        }
+
+        function updateCartQuantity(productId, quantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = Math.max(1, quantity);
+                if (currentPage === 'cart') {
+                    loadPage(); // Refresh cart page
+                }
+            }
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const cartCount = document.getElementById('cart-count');
+            const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = itemCount;
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        // Page Content Loaders
+        function loadPage() {
+            const mainContent = document.getElementById('main-content');
+            
+            // Initial loading state
+            mainContent.innerHTML = `
+                <div class="flex justify-center items-center h-64">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+            `;
+            
+            // Load appropriate page content
+            setTimeout(() => {
+                switch(currentPage) {
+                    case 'home':
+                        loadHomePage();
+                        break;
+                    case 'products':
+                        loadProductsPage();
+                        break;
+                    case 'product':
+                        loadProductDetailPage();
+                        break;
+                    case 'cart':
+                        loadCartPage();
+                        break;
+                    case 'checkout':
+                        loadCheckoutPage();
+                        break;
+                    case 'account':
+                        loadAccountPage();
+                        break;
+                    case 'orders':
+                        loadOrdersPage();
+                        break;
+                    default:
+                        loadHomePage();
+                }
+            }, 300); // Small delay for loading animation
+        }
+
+        function loadHomePage() {
+            const mainContent = document.getElementById('main-content');
+            
+            // Hero section
+            const heroSection = `
+                <section class="relative mb-10 rounded-xl overflow-hidden shadow-xl">
+                    <div class="bg-gradient-to-r from-primary to-purple-600 h-96 flex items-center">
+                        <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
+                            <div class="text-white z-10 md:w-1/2 fadeIn">
+                                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                                    Summer Sale Is Live
+                                </h1>
+                                <p class="text-xl md:text-2xl mb-8">
+                                    Get up to 50% off on selected items. Limited time offer!
+                                </p>
+                                <button onclick="navigateTo('products', {category: 'all'})" 
+                                        class="bg-white text-primary font-bold px-8 py-3 rounded-full 
+                                        hover:bg-gray-100 transform hover:scale-105 transition duration-300">
+                                    Shop Now
+                                </button>
+                            </div>
+                            <div class="md:w-1/2 hidden md:block">
+                                <div class="relative">
+                                    <div class="absolute top-0 right-0 bg-white bg-opacity-20 rounded-full h-64 w-64 -mt-16 -mr-16"></div>
+                                    <div class="absolute bottom-0 right-0 bg-white bg-opacity-20 rounded-full h-40 w-40 -mb-10 mr-10"></div>
+                                    <div class="absolute bottom-0 left-0 bg-white bg-opacity-20 rounded-full h-32 w-32 -mb-12 -ml-12"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+            
+            // Categories
+            const categoriesSection = `
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Shop by Category</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        ${CATEGORIES.map(category => `
+                            <div onclick="navigateTo('products', {category: '${category.id}'})" 
+                                class="bg-white dark:bg-darkSecondary cursor-pointer rounded-xl shadow-md flex flex-col items-center p-6 transform hover:scale-105 transition duration-300 product-card">
+                                <div class="w-16 h-16 flex items-center justify-center mb-4 text-3xl text-primary">
+                                    <i class="fas ${category.icon}"></i>
+                                </div>
+                                <h3 class="font-semibold text-center">${category.name}</h3>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+            
+            // Featured products
+            const featuredProducts = PRODUCTS.filter(product => product.featured);
+            const featuredSection = `
+                <section class="mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Featured Products</h2>
+                        <a href="#" onclick="navigateTo('products', {category: 'all'})" 
+                           class="text-primary hover:text-primaryHover transition flex items-center">
+                            View all <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${featuredProducts.map(product => `
+                            <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden product-card">
+                                <div class="relative">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800">
+                                    ${product.discount ? `
+                                        <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                            ${product.discount}% OFF
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-1 line-clamp-1">${product.name}</h3>
+                                    <div class="flex items-center mb-2">
+                                        <div class="flex text-yellow-400">
+                                            ${Array(5).fill().map((_, i) => `
+                                                <i class="fas ${i < Math.floor(product.rating) ? 'fa-star' : i < product.rating ? 'fa-star-half-alt' : 'fa-star text-gray-300 dark:text-gray-600'}"></i>
+                                            `).join('')}
+                                        </div>
+                                        <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">(${product.reviewCount})</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            ${product.discount ? `
+                                                <span class="text-gray-500 dark:text-gray-400 line-through text-sm">$${product.price.toFixed(2)}</span>
+                                                <span class="font-bold text-lg ml-1">$${(product.price * (1 - product.discount / 100)).toFixed(2)}</span>
+                                            ` : `
+                                                <span class="font-bold text-lg">$${product.price.toFixed(2)}</span>
+                                            `}
+                                        </div>
+                                        <button onclick="addToCart(${product.id})" 
+                                                class="bg-primary hover:bg-primaryHover text-white p-2 rounded-full transition">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                    <button onclick="navigateTo('product', {id: ${product.id}})" 
+                                            class="mt-3 w-full bg-gray-100 hover:bg-gray-200 dark:bg-darkBg dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 py-2 rounded transition text-sm">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+            
+            // Discount banner
+            const discountBanner = `
+                <section class="mb-12">
+                    <div class="bg-gradient-to-r from-purple-600 to-primary rounded-xl overflow-hidden shadow-lg">
+                        <div class="p-8 md:p-12 flex flex-col md:flex-row items-center justify-between">
+                            <div class="text-white mb-6 md:mb-0 md:w-2/3">
+                                <h2 class="text-2xl md:text-3xl font-bold mb-2">Get 10% Off Your First Order</h2>
+                                <p class="text-lg opacity-90 mb-4">Sign up for our newsletter and receive a discount code.</p>
+                                <div class="flex flex-col sm:flex-row">
+                                    <input type="email" placeholder="Your email address" 
+                                           class="flex-grow px-4 py-3 rounded-l text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-600 w-full sm:w-auto mb-2 sm:mb-0 text-base">
+                                    <button class="bg-white text-primary font-semibold px-6 py-3 rounded-r sm:rounded-l-none hover:bg-gray-100 transition">
+                                        Subscribe
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="md:w-1/3 flex justify-center">
+                                <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-bold">10%</div>
+                                        <div class="text-sm uppercase">Discount</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+            
+            // Testimonials
+            const testimonials = `
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold mb-6">What Our Customers Say</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md p-6">
+                            <div class="flex text-yellow-400 mb-3">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">"Absolutely love my new headphones! The sound quality is incredible and they're so comfortable. Shipping was fast too!"</p>
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="font-semibold">Sarah J.</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Verified Buyer</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md p-6">
+                            <div class="flex text-yellow-400 mb-3">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">"The customer service was outstanding. They helped me choose the perfect laptop for my needs and the price was better than competitors."</p>
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="font-semibold">Michael T.</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Verified Buyer</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md p-6">
+                            <div class="flex text-yellow-400 mb-3">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">"I've been shopping here for years and I'm never disappointed. Great products, fast shipping, and easy returns when needed."</p>
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="font-semibold">Emily R.</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Verified Buyer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+            
+            // Combine all sections
+            mainContent.innerHTML = heroSection + categoriesSection + featuredSection + discountBanner + testimonials;
+        }
+
+        function loadProductsPage() {
+            const mainContent = document.getElementById('main-content');
+            let products = [...PRODUCTS];
+            
+            // Filter by category if specified
+            if (pageParams.category && pageParams.category !== 'all') {
+                products = products.filter(p => p.category === pageParams.category);
+            }
+            
+            // Filter by search term if specified
+            if (pageParams.search) {
+                const searchTerm = pageParams.search.toLowerCase();
+                products = products.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm) || 
+                    p.description.toLowerCase().includes(searchTerm) ||
+                    p.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Get category name for title
+            let pageTitle = 'All Products';
+            if (pageParams.category && pageParams.category !== 'all') {
+                const category = CATEGORIES.find(c => c.id === pageParams.category);
+                if (category) pageTitle = category.name;
+            }
+            if (pageParams.search) {
+                pageTitle = `Search Results: "${pageParams.search}"`;
+            }
+            
+            // Build the page content
+            const content = `
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">${pageTitle}</h1>
+                    <div class="text-gray-600 dark:text-gray-400">${products.length} products found</div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Filters Sidebar -->
+                    <div class="lg:col-span-1 p-4 bg-white dark:bg-darkSecondary rounded-xl shadow-md h-fit">
+                        <h2 class="text-xl font-semibold mb-4">Filters</h2>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-medium mb-2">Categories</h3>
+                            <div class="space-y-2">
+                                <a href="#" onclick="navigateTo('products', {category: 'all'})" 
+                                   class="block px-2 py-1 rounded ${!pageParams.category || pageParams.category === 'all' ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}">
+                                   All Categories
+                                </a>
+                                ${CATEGORIES.map(cat => `
+                                    <a href="#" onclick="navigateTo('products', {category: '${cat.id}'})" 
+                                       class="block px-2 py-1 rounded ${pageParams.category === cat.id ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}">
+                                       ${cat.name}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-medium mb-2">Price Range</h3>
+                            <div class="flex items-center">
+                                <input type="range" min="0" max="1500" value="1500" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <div class="flex justify-between mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                <span>$0</span>
+                                <span>$1500</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-medium mb-2">Rating</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                    <span class="ml-2 flex items-center">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <span class="ml-1 text-sm text-gray-600 dark:text-gray-400">& up</span>
+                                    </span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                    <span class="ml-2 flex items-center">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-gray-300 dark:text-gray-600"></i>
+                                        <span class="ml-1 text-sm text-gray-600 dark:text-gray-400">& up</span>
+                                    </span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                    <span class="ml-2 flex items-center">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-gray-300 dark:text-gray-600"></i>
+                                        <i class="fas fa-star text-gray-300 dark:text-gray-600"></i>
+                                        <span class="ml-1 text-sm text-gray-600 dark:text-gray-400">& up</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3 class="font-medium mb-2">Availability</h3>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                <span class="ml-2">In Stock Only</span>
+                            </label>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <button class="w-full bg-primary hover:bg-primaryHover text-white py-2 rounded transition">
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Grid -->
+                    <div class="lg:col-span-3">
+                        <div class="flex justify-between items-center mb-4 bg-white dark:bg-darkSecondary p-4 rounded-xl shadow-md">
+                            <div class="text-gray-600 dark:text-gray-400">
+                                Showing ${products.length} products
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-2 text-gray-600 dark:text-gray-400">Sort by:</span>
+                                <select class="border border-gray-300 dark:border-gray-700 rounded py-1 px-2 bg-white dark:bg-darkBg focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    <option>Featured</option>
+                                    <option>Price: Low to High</option>
+                                    <option>Price: High to Low</option>
+                                    <option>Customer Rating</option>
+                                    <option>Newest</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        ${products.length > 0 ? `
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                ${products.map(product => `
+                                    <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden product-card">
+                                        <div class="relative">
+                                            <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800">
+                                            ${product.discount ? `
+                                                <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                    ${product.discount}% OFF
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        <div class="p-4">
+                                            <h3 class="font-semibold text-lg mb-1 line-clamp-1">${product.name}</h3>
+                                            <div class="flex items-center mb-2">
+                                                <div class="flex text-yellow-400">
+                                                    ${Array(5).fill().map((_, i) => `
+                                                        <i class="fas ${i < Math.floor(product.rating) ? 'fa-star' : i < product.rating ? 'fa-star-half-alt' : 'fa-star text-gray-300 dark:text-gray-600'}"></i>
+                                                    `).join('')}
+                                                </div>
+                                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">(${product.reviewCount})</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    ${product.discount ? `
+                                                        <span class="text-gray-500 dark:text-gray-400 line-through text-sm">$${product.price.toFixed(2)}</span>
+                                                        <span class="font-bold text-lg ml-1">$${(product.price * (1 - product.discount / 100)).toFixed(2)}</span>
+                                                    ` : `
+                                                        <span class="font-bold text-lg">$${product.price.toFixed(2)}</span>
+                                                    `}
+                                                </div>
+                                                <button onclick="addToCart(${product.id})" 
+                                                        class="bg-primary hover:bg-primaryHover text-white p-2 rounded-full transition">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </button>
+                                            </div>
+                                            <button onclick="navigateTo('product', {id: ${product.id}})" 
+                                                    class="mt-3 w-full bg-gray-100 hover:bg-gray-200 dark:bg-darkBg dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 py-2 rounded transition text-sm">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md p-8 text-center">
+                                <div class="text-6xl text-gray-300 dark:text-gray-600 mb-4">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-2">No products found</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                    We couldn't find any products matching your criteria.
+                                </p>
+                                <button onclick="navigateTo('products', {category: 'all'})" 
+                                        class="bg-primary hover:bg-primaryHover text-white px-6 py-2 rounded transition">
+                                    View All Products
+                                </button>
+                            </div>
+                        `}
+                        
+                        ${products.length > 0 ? `
+                            <div class="mt-8 flex justify-center">
+                                <nav class="flex items-center">
+                                    <button class="px-3 py-2 mx-1 rounded bg-white dark:bg-darkSecondary text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="px-4 py-2 mx-1 rounded bg-primary text-white">1</button>
+                                    <button class="px-4 py-2 mx-1 rounded bg-white dark:bg-darkSecondary text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">2</button>
+                                    <button class="px-4 py-2 mx-1 rounded bg-white dark:bg-darkSecondary text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">3</button>
+                                    <button class="px-3 py-2 mx-1 rounded bg-white dark:bg-darkSecondary text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </nav>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = content;
+        }
+
+        function loadProductDetailPage() {
+            const mainContent = document.getElementById('main-content');
+            const productId = pageParams.id;
+            const product = PRODUCTS.find(p => p.id === productId);
+            
+            if (!product) {
+                mainContent.innerHTML = `
+                    <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md p-8 text-center">
+                        <div class="text-6xl text-gray-300 dark:text-gray-600 mb-4">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Product not found</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            The product you're looking for doesn't exist or has been removed.
+                        </p>
+                        <button onclick="navigateTo('products', {category: 'all'})" 
+                                class="bg-primary hover:bg-primaryHover text-white px-6 py-2 rounded transition">
+                            View All Products
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Related products (same category)
+            const relatedProducts = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+            
+            // Calculate discounted price if applicable
+            const discountedPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+            
+            const content = `
+                <div class="mb-4">
+                    <nav class="flex" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3 flex-wrap">
+                            <li class="inline-flex items-center">
+                                <a href="#" onclick="navigateTo('home')" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm transition">
+                                    Home
+                                </a>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <i class="fas fa-chevron-right text-gray-400 text-sm mx-1"></i>
+                                    <a href="#" onclick="navigateTo('products', {category: 'all'})" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm transition">
+                                        Products
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <i class="fas fa-chevron-right text-gray-400 text-sm mx-1"></i>
+                                    <a href="#" onclick="navigateTo('products', {category: '${product.category}'})" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm transition">
+                                        ${CATEGORIES.find(c => c.id === product.category)?.name || 'Category'}
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <i class="fas fa-chevron-right text-gray-400 text-sm mx-1"></i>
+                                    <span class="text-gray-500 dark:text-gray-500 text-sm" aria-current="page">
+                                        ${product.name}
+                                    </span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                
+                <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden mb-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+                        <!-- Product Image -->
+                        <div class="flex flex-col">
+                            <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-6 flex items-center justify-center h-80">
+                                <img src="${product.image}" alt="${product.name}" class="max-w-full max-h-full object-contain">
+                            </div>
+                            <div class="grid grid-cols-4 gap-2 mt-4">
+                                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 cursor-pointer hover:opacity-80 transition">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full h-16 object-contain">
+                                </div>
+                                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 cursor-pointer hover:opacity-80 transition">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full h-16 object-contain">
+                                </div>
+                                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 cursor-pointer hover:opacity-80 transition">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full h-16 object-contain">
+                                </div>
+                                <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 cursor-pointer hover:opacity-80 transition">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full h-16 object-contain">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Details -->
+                        <div>
+                            <h1 class="text-2xl font-bold mb-2">${product.name}</h1>
+                            
+                            <div class="flex items-center mb-4">
+                                <div class="flex text-yellow-400">
+                                    ${Array(5).fill().map((_, i) => `
+                                        <i class="fas ${i < Math.floor(product.rating) ? 'fa-star' : i < product.rating ? 'fa-star-half-alt' : 'fa-star text-gray-300 dark:text-gray-600'}"></i>
+                                    `).join('')}
+                                </div>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">${product.rating} (${product.reviewCount} reviews)</span>
+                                <span class="mx-3 text-gray-300 dark:text-gray-600">|</span>
+                                <span class="text-green-500">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    In Stock
+                                </span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                ${product.discount ? `
+                                    <div class="flex items-center">
+                                        <span class="text-gray-500 dark:text-gray-400 line-through text-lg">$${product.price.toFixed(2)}</span>
+                                        <span class="ml-2 text-3xl font-bold">$${discountedPrice.toFixed(2)}</span>
+                                        <span class="ml-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                            ${product.discount}% OFF
+                                        </span>
+                                    </div>
+                                ` : `
+                                    <div class="text-3xl font-bold">$${product.price.toFixed(2)}</div>
+                                `}
+                            </div>
+                            
+                            <div class="border-t border-b border-gray-200 dark:border-gray-700 py-4 mb-6">
+                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    ${product.description}
+                                </p>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-semibold mb-2">Key Features:</h3>
+                                <ul class="space-y-1 text-gray-600 dark:text-gray-400">
+                                    ${Object.entries(product.details).map(([key, value]) => `
+                                        <li class="flex">
+                                            <span class="font-medium w-36">${key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                                            <span>${value}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row mb-6">
+                                <div class="flex items-center border border-gray-300 dark:border-gray-700 rounded-lg mb-3 sm:mb-0 sm:mr-4">
+                                    <button id="decrease-quantity" class="text-gray-600 dark:text-gray-400 px-3 py-2 focus:outline-none" onclick="updateQuantity(-1)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input id="quantity-input" type="number" value="1" min="1" max="99" class="w-12 border-none text-center focus:outline-none bg-transparent">
+                                    <button id="increase-quantity" class="text-gray-600 dark:text-gray-400 px-3 py-2 focus:outline-none" onclick="updateQuantity(1)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                
+                                <button onclick="addToCartFromDetail(${product.id})" class="flex-grow bg-primary hover:bg-primaryHover text-white py-3 px-6 rounded-lg transition flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart mr-2"></i>
+                                    Add to Cart
+                                </button>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm">
+                                <div class="flex items-center">
+                                    <i class="fas fa-truck mr-2"></i>
+                                    Free shipping on orders over $50
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-undo mr-2"></i>
+                                    30-day easy returns
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-shield-alt mr-2"></i>
+                                    2 year warranty
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Tabs -->
+                <div class="mb-10">
+                    <div class="border-b border-gray-200 dark:border-gray-700">
+                        <nav class="flex flex-wrap -mb-px">
+                            <button onclick="switchTab('description')" id="tab-description" class="tab-item py-3 px-6 font-medium border-b-2 border-primary text-primary">
+                                Description
+                            </button>
+                            <button onclick="switchTab('specifications')" id="tab-specifications" class="tab-item py-3 px-6 font-medium text-gray-500 dark:text-gray-400 border-b-2 border-transparent hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
+                                Specifications
+                            </button>
+                            <button onclick="switchTab('reviews')" id="tab-reviews" class="tab-item py-3 px-6 font-medium text-gray-500 dark:text-gray-400 border-b-2 border-transparent hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600">
+                                Reviews (${product.reviewCount})
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <div class="py-6">
+                        <div id="tab-content-description" class="tab-content">
+                            <div class="prose max-w-none dark:prose-invert prose-lg">
+                                <p class="mb-4">${product.description}</p>
+                                <p class="mb-4">Experience the ultimate in ${product.category} technology with the ${product.name}. Designed for both performance and style, this product is perfect for anyone looking to enhance their lifestyle.</p>
+                                <p>Whether you're a professional or enthusiast, the ${product.name} delivers exceptional value and quality you can trust.</p>
+                            </div>
+                        </div>
+                        
+                        <div id="tab-content-specifications" class="tab-content hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
+                                    <h3 class="text-lg font-semibold mb-4">Technical Specifications</h3>
+                                    <div class="space-y-3">
+                                        ${Object.entries(product.details).map(([key, value]) => `
+                                            <div class="flex border-b border-gray-200 dark:border-gray-700 pb-2 last:border-b-0">
+                                                <span class="font-medium w-1/2">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                                <span class="text-gray-600 dark:text-gray-400">${value}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
+                                    <h3 class="text-lg font-semibold mb-4">Shipping Information</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex border-b border-gray-200 dark:border-gray-700 pb-2">
+                                            <span class="font-medium w-1/2">Dimensions</span>
+                                            <span class="text-gray-600 dark:text-gray-400">12" x 8" x 4"</span>
+                                        </div>
+                                        <div class="flex border-b border-gray-200 dark:border-gray-700 pb-2">
+                                            <span class="font-medium w-1/2">Weight</span>
+                                            <span class="text-gray-600 dark:text-gray-400">1.5 lbs</span>
+                                        </div>
+                                        <div class="flex border-b border-gray-200 dark:border-gray-700 pb-2">
+                                            <span class="font-medium w-1/2">Shipping Time</span>
+                                            <span class="text-gray-600 dark:text-gray-400">2-3 business days</span>
+                                        </div>
+                                        <div class="flex border-b border-gray-200 dark:border-gray-700 pb-2">
+                                            <span class="font-medium w-1/2">Return Policy</span>
+                                            <span class="text-gray-600 dark:text-gray-400">30 days</span>
+                                        </div>
+                                        <div class="flex border-b-0">
+                                            <span class="font-medium w-1/2">Warranty</span>
+                                            <span class="text-gray-600 dark:text-gray-400">2 years</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="tab-content-reviews" class="tab-content hidden">
+                            <div class="mb-8 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
+                                <div class="flex flex-col md:flex-row gap-6">
+                                    <div class="md:w-1/4 flex flex-col items-center justify-center p-4">
+                                        <div class="text-5xl font-bold mb-2">${product.rating}</div>
+                                        <div class="flex text-yellow-400 mb-2">
+                                            ${Array(5).fill().map((_, i) => `
+                                                <i class="fas ${i < Math.floor(product.rating) ? 'fa-star' : i < product.rating ? 'fa-star-half-alt' : 'fa-star text-gray-300 dark:text-gray-600'}"></i>
+                                            `).join('')}
+                                        </div>
+                                        <div class="text-gray-600 dark:text-gray-400">${product.reviewCount} reviews</div>
+                                    </div>
+                                    
+                                    <div class="md:w-2/4">
+                                        <div class="space-y-2">
+                                            <div class="flex items-center">
+                                                <div class="w-24">5 stars</div>
+                                                <div class="flex-grow h-4 mx-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-yellow-400" style="width: 70%"></div>
+                                                </div>
+                                                <div class="w-16 text-right text-gray-600 dark:text-gray-400">70%</div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <div class="w-24">4 stars</div>
+                                                <div class="flex-grow h-4 mx-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-yellow-400" style="width: 20%"></div>
+                                                </div>
+                                                <div class="w-16 text-right text-gray-600 dark:text-gray-400">20%</div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <div class="w-24">3 stars</div>
+                                                <div class="flex-grow h-4 mx-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-yellow-400" style="width: 5%"></div>
+                                                </div>
+                                                <div class="w-16 text-right text-gray-600 dark:text-gray-400">5%</div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <div class="w-24">2 stars</div>
+                                                <div class="flex-grow h-4 mx-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-yellow-400" style="width: 3%"></div>
+                                                </div>
+                                                <div class="w-16 text-right text-gray-600 dark:text-gray-400">3%</div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <div class="w-24">1 star</div>
+                                                <div class="flex-grow h-4 mx-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-yellow-400" style="width: 2%"></div>
+                                                </div>
+                                                <div class="w-16 text-right text-gray-600 dark:text-gray-400">2%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="md:w-1/4 flex items-center justify-center">
+                                        <button class="bg-primary hover:bg-primaryHover text-white py-2 px-6 rounded-lg transition">
+                                            Write a Review
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="bg-white dark:bg-darkSecondary p-6 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mr-4 text-gray-600 dark:text-gray-400">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Michael Johnson</h4>
+                                            <div class="flex items-center">
+                                                <div class="flex text-yellow-400">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">2 months ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="font-semibold mb-2">Exceptional quality and value!</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">
+                                        I've been using this product for two months now and I'm extremely impressed with its performance. The quality is exceptional and it's worth every penny. Highly recommend to anyone looking for a reliable product in this category.
+                                    </p>
+                                    <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                                        <button class="flex items-center mr-4 hover:text-primary transition">
+                                            <i class="far fa-thumbs-up mr-1"></i> Helpful (12)
+                                        </button>
+                                        <button class="hover:text-primary transition">
+                                            Report
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white dark:bg-darkSecondary p-6 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mr-4 text-gray-600 dark:text-gray-400">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Sarah Williams</h4>
+                                            <div class="flex items-center">
+                                                <div class="flex text-yellow-400">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star text-gray-300 dark:text-gray-600"></i>
+                                                </div>
+                                                <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">1 month ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="font-semibold mb-2">Great product with minor issues</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">
+                                        This product has met most of my expectations. The design is sleek, and it performs well overall. The only drawback is the battery life, which isn't as long as advertised. Otherwise, it's a solid purchase and I'm satisfied with it.
+                                    </p>
+                                    <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                                        <button class="flex items-center mr-4 hover:text-primary transition">
+                                            <i class="far fa-thumbs-up mr-1"></i> Helpful (8)
+                                        </button>
+                                        <button class="hover:text-primary transition">
+                                            Report
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white dark:bg-darkSecondary p-6 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mr-4 text-gray-600 dark:text-gray-400">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">David Thompson</h4>
+                                            <div class="flex items-center">
+                                                <div class="flex text-yellow-400">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                </div>
+                                                <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">2 weeks ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="font-semibold mb-2">Worth the investment</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">
+                                        After researching various options, I decided on this product and couldn't be happier. The quality is outstanding, and the customer service was excellent when I had a question about setup. Definitely worth the investment if you're looking for something that will last.
+                                    </p>
+                                    <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                                        <button class="flex items-center mr-4 hover:text-primary transition">
+                                            <i class="far fa-thumbs-up mr-1"></i> Helpful (5)
+                                        </button>
+                                        <button class="hover:text-primary transition">
+                                            Report
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-center mt-4">
+                                    <button class="text-primary hover:text-primaryHover transition font-medium">
+                                        Load More Reviews
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Products -->
+                <div>
+                    <h2 class="text-2xl font-bold mb-6">You May Also Like</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${relatedProducts.map(product => `
+                            <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden product-card">
+                                <div class="relative">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800">
+                                    ${product.discount ? `
+                                        <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                            ${product.discount}% OFF
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-1 line-clamp-1">${product.name}</h3>
+                                    <div class="flex items-center mb-2">
+                                        <div class="flex text-yellow-400">
+                                            ${Array(5).fill().map((_, i) => `
+                                                <i class="fas ${i < Math.floor(product.rating) ? 'fa-star' : i < product.rating ? 'fa-star-half-alt' : 'fa-star text-gray-300 dark:text-gray-600'}"></i>
+                                            `).join('')}
+                                        </div>
+                                        <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">(${product.reviewCount})</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            ${product.discount ? `
+                                                <span class="text-gray-500 dark:text-gray-400 line-through text-sm">$${product.price.toFixed(2)}</span>
+                                                <span class="font-bold text-lg ml-1">$${(product.price * (1 - product.discount / 100)).toFixed(2)}</span>
+                                            ` : `
+                                                <span class="font-bold text-lg">$${product.price.toFixed(2)}</span>
+                                            `}
+                                        </div>
+                                        <button onclick="addToCart(${product.id})" 
+                                                class="bg-primary hover:bg-primaryHover text-white p-2 rounded-full transition">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                    <button onclick="navigateTo('product', {id: ${product.id}})" 
+                                            class="mt-3 w-full bg-gray-100 hover:bg-gray-200 dark:bg-darkBg dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 py-2 rounded transition text-sm">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = content;
+            
+            // Initialize product page functionality
+            document.getElementById('quantity-input').addEventListener('input', function(e) {
+                const value = parseInt(e.target.value);
+                if (isNaN(value) || value < 1) {
+                    e.target.value = 1;
+                }
+            });
+            
+            // Tab switching functionality
+            window.switchTab = function(tabName) {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-item').forEach(tab => {
+                    tab.classList.remove('border-primary', 'text-primary');
+                    tab.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                });
+                
+                // Show selected tab content and activate tab
+                document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
+                const activeTab = document.getElementById(`tab-${tabName}`);
+                activeTab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                activeTab.classList.add('border-primary', 'text-primary');
+            };
+            
+            // Quantity adjustment
+            window.updateQuantity = function(change) {
+                const input = document.getElementById('quantity-input');
+                let value = parseInt(input.value);
+                value = Math.max(1, value + change);
+                input.value = value;
+            };
+            
+            // Add to cart with quantity
+            window.addToCartFromDetail = function(productId) {
+                const quantityInput = document.getElementById('quantity-input');
+                const quantity = parseInt(quantityInput.value);
+                if (quantity > 0) {
+                    addToCart(productId, quantity);
+                }
+            };
+        }
+
+        function loadCartPage() {
+            const mainContent = document.getElementById('main-content');
+            
+            if (cart.length === 0) {
+                mainContent.innerHTML = `
+                    <div class="text-center py-16">
+                        <div class="text-6xl text-gray-300 dark:text-gray-600 mb-6">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-4">Your Cart is Empty</h2>
+                        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                            Looks like you haven't added any products to your cart yet. 
+                            Explore our products and find something you like!
+                        </p>
+                        <button onclick="navigateTo('products', {category: 'all'})" 
+                                class="bg-primary hover:bg-primaryHover text-white py-3 px-8 rounded-lg transition">
+                            Start Shopping
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const subtotal = getCartTotal();
+            const shipping = subtotal > 50 ? 0 : 5.99;
+            const tax = subtotal * 0.08; // 8% tax
+            const total = subtotal + shipping + tax;
+            
+            const content = `
+                <h1 class="text-3xl font-bold mb-8">Your Shopping Cart</h1>
+                
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Cart Items -->
+                    <div class="lg:w-2/3">
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden mb-6">
+                            <div class="p-6">
+                                <div class="hidden sm:flex border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 text-gray-600 dark:text-gray-400 font-medium">
+                                    <div class="w-2/5">Product</div>
+                                    <div class="w-1/5 text-center">Price</div>
+                                    <div class="w-1/5 text-center">Quantity</div>
+                                    <div class="w-1/5 text-right">Total</div>
+                                </div>
+                                
+                                ${cart.map(item => {
+                                    const product = PRODUCTS.find(p => p.id === item.id);
+                                    const discountedPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+                                    return `
+                                        <div class="flex flex-col sm:flex-row items-center py-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                                            <div class="w-full sm:w-2/5 flex items-center mb-4 sm:mb-0">
+                                                <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4">
+                                                    <img src="${item.image}" alt="${item.name}" class="max-h-16 max-w-16 object-contain">
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-medium">${item.name}</h3>
+                                                    <button onclick="removeFromCart(${item.id})" class="text-red-500 text-sm flex items-center mt-1 hover:text-red-600 transition">
+                                                        <i class="fas fa-trash-alt text-xs mr-1"></i> Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="w-full sm:w-1/5 flex justify-between items-center sm:justify-center mb-4 sm:mb-0">
+                                                <span class="sm:hidden text-gray-600 dark:text-gray-400">Price:</span>
+                                                <span>${product.discount ? `
+                                                    <span class="text-gray-500 dark:text-gray-400 line-through text-sm">$${product.price.toFixed(2)}</span>
+                                                    <span class="font-semibold ml-1">$${discountedPrice.toFixed(2)}</span>
+                                                ` : `
+                                                    <span class="font-semibold">$${discountedPrice.toFixed(2)}</span>
+                                                `}</span>
+                                            </div>
+                                            
+                                            <div class="w-full sm:w-1/5 flex justify-between items-center sm:justify-center mb-4 sm:mb-0">
+                                                <span class="sm:hidden text-gray-600 dark:text-gray-400">Quantity:</span>
+                                                <div class="flex items-center border border-gray-300 dark:border-gray-700 rounded">
+                                                    <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" 
+                                                            class="text-gray-600 dark:text-gray-400 w-8 h-8 flex items-center justify-center">
+                                                        <i class="fas fa-minus text-xs"></i>
+                                                    </button>
+                                                    <span class="w-8 text-center">${item.quantity}</span>
+                                                    <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})" 
+                                                            class="text-gray-600 dark:text-gray-400 w-8 h-8 flex items-center justify-center">
+                                                        <i class="fas fa-plus text-xs"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="w-full sm:w-1/5 flex justify-between items-center sm:justify-end">
+                                                <span class="sm:hidden text-gray-600 dark:text-gray-400">Total:</span>
+                                                <span class="font-semibold">$${(discountedPrice * item.quantity).toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row justify-between gap-4">
+                            <div class="flex">
+                                <input type="text" placeholder="Coupon code" class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded-l focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                <button class="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-r transition">
+                                    Apply
+                                </button>
+                            </div>
+                            <button onclick="navigateTo('products', {category: 'all'})" class="flex items-center justify-center text-primary hover:text-primaryHover transition">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Continue Shopping
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="lg:w-1/3">
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden sticky top-24">
+                            <div class="p-6">
+                                <h2 class="text-xl font-bold mb-6">Order Summary</h2>
+                                
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Subtotal (${cart.reduce((total, item) => total + item.quantity, 0)} items)</span>
+                                        <span class="font-semibold">$${subtotal.toFixed(2)}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Shipping</span>
+                                        <span class="font-semibold">${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                        <span class="font-semibold">$${tax.toFixed(2)}</span>
+                                    </div>
+                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                                        <div class="flex justify-between font-bold">
+                                            <span>Total</span>
+                                            <span>$${total.toFixed(2)}</span>
+                                        </div>
+                                        ${shipping === 0 ? `
+                                            <div class="text-green-500 text-sm mt-2">
+                                                <i class="fas fa-check-circle mr-1"></i> 
+                                                You've qualified for free shipping!
+                                            </div>
+                                        ` : `
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm mt-2">
+                                                You're $${(50 - subtotal).toFixed(2)} away from free shipping.
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                                
+                                <button onclick="navigateTo('checkout')" 
+                                        class="w-full bg-primary hover:bg-primaryHover text-white py-3 rounded-lg transition mb-4">
+                                    Proceed to Checkout
+                                </button>
+                                
+                                <div class="text-center text-gray-600 dark:text-gray-400 text-sm">
+                                    <p class="mb-2">We accept</p>
+                                    <div class="flex justify-center space-x-2">
+                                        <i class="fab fa-cc-visa text-2xl"></i>
+                                        <i class="fab fa-cc-mastercard text-2xl"></i>
+                                        <i class="fab fa-cc-amex text-2xl"></i>
+                                        <i class="fab fa-cc-paypal text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = content;
+        }
+
+        function loadCheckoutPage() {
+            const mainContent = document.getElementById('main-content');
+            
+            if (cart.length === 0) {
+                // Redirect to cart page if cart is empty
+                navigateTo('cart');
+                return;
+            }
+            
+            const subtotal = getCartTotal();
+            const shipping = subtotal > 50 ? 0 : 5.99;
+            const tax = subtotal * 0.08; // 8% tax
+            const total = subtotal + shipping + tax;
+            
+            const content = `
+                <h1 class="text-3xl font-bold mb-6">Checkout</h1>
+                
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Checkout Form -->
+                    <div class="lg:w-2/3 order-2 lg:order-1">
+                        <!-- Progress Bar -->
+                        <div class="mb-8">
+                            <div class="flex">
+                                <div class="flex-1">
+                                    <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center mx-auto">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="text-center mt-2 text-sm font-medium">Account</div>
+                                </div>
+                                <div class="flex-1 relative">
+                                    <div class="absolute top-5 left-0 right-0 h-1 bg-primary" style="top: 1.25rem;"></div>
+                                    <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center mx-auto relative z-10">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div class="text-center mt-2 text-sm font-medium">Payment</div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="absolute top-5 left-0 right-0 h-1 bg-gray-300 dark:bg-gray-700" style="top: 1.25rem;"></div>
+                                    <div class="w-10 h-10 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full flex items-center justify-center mx-auto relative z-10">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="text-center mt-2 text-sm text-gray-500 dark:text-gray-400">Confirmation</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Checkout Form -->
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden mb-6">
+                            <div class="p-6">
+                                <h2 class="text-xl font-bold mb-6">Shipping Information</h2>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">First Name *</label>
+                                        <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">Last Name *</label>
+                                        <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">Email Address *</label>
+                                        <input type="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">Phone Number *</label>
+                                        <input type="tel" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">Address *</label>
+                                        <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">City *</label>
+                                        <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">Zip/Postal Code *</label>
+                                        <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">State/Province *</label>
+                                        <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 dark:text-gray-300 mb-2">Country *</label>
+                                        <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                            <option>United States</option>
+                                            <option>Canada</option>
+                                            <option>United Kingdom</option>
+                                            <option>Australia</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <h2 class="text-xl font-bold mb-6 border-t border-gray-200 dark:border-gray-700 pt-6">Payment Information</h2>
+                                
+                                <div class="mb-6">
+                                    <div class="flex space-x-4 mb-4">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="payment" class="form-radio h-4 w-4 text-primary" checked>
+                                            <span class="ml-2">Credit/Debit Card</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="payment" class="form-radio h-4 w-4 text-primary">
+                                            <span class="ml-2">PayPal</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Card Number *</label>
+                                            <div class="relative">
+                                                <input type="text" placeholder="•••• •••• •••• ••••" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 flex space-x-1">
+                                                    <i class="fab fa-cc-visa text-gray-400"></i>
+                                                    <i class="fab fa-cc-mastercard text-gray-400"></i>
+                                                    <i class="fab fa-cc-amex text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Expiration Date *</label>
+                                            <input type="text" placeholder="MM/YY" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 dark:text-gray-300 mb-2">CVV *</label>
+                                            <input type="text" placeholder="•••" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Name on Card *</label>
+                                            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center mb-6">
+                                    <input type="checkbox" id="same-address" class="form-checkbox h-4 w-4 text-primary" checked>
+                                    <label for="same-address" class="ml-2 text-gray-700 dark:text-gray-300">
+                                        Billing address is the same as shipping address
+                                    </label>
+                                </div>
+                                
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 flex flex-col sm:flex-row justify-between gap-4">
+                                    <button onclick="navigateTo('cart')" class="flex items-center justify-center text-primary hover:text-primaryHover transition">
+                                        <i class="fas fa-arrow-left mr-2"></i>
+                                        Return to Cart
+                                    </button>
+                                    <button onclick="placeOrder()" class="bg-primary hover:bg-primaryHover text-white py-3 px-8 rounded-lg transition">
+                                        Place Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="lg:w-1/3 order-1 lg:order-2">
+                        <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden sticky top-24">
+                            <div class="p-6">
+                                <h2 class="text-xl font-bold mb-6">Order Summary</h2>
+                                
+                                <div class="max-h-72 overflow-y-auto mb-6 pr-2">
+                                    ${cart.map(item => {
+                                        const product = PRODUCTS.find(p => p.id === item.id);
+                                        const discountedPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+                                        return `
+                                            <div class="flex items-center py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4 relative">
+                                                    <img src="${item.image}" alt="${item.name}" class="max-h-12 max-w-12 object-contain">
+                                                    <div class="absolute -top-2 -right-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 w-5 h-5 rounded-full flex items-center justify-center text-xs">
+                                                        ${item.quantity}
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <h3 class="font-medium line-clamp-1">${item.name}</h3>
+                                                    <div class="flex justify-between items-center mt-1">
+                                                        <span class="text-gray-600 dark:text-gray-400 text-sm">
+                                                            $${discountedPrice.toFixed(2)} × ${item.quantity}
+                                                        </span>
+                                                        <span class="font-semibold">
+                                                            $${(discountedPrice * item.quantity).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Subtotal (${cart.reduce((total, item) => total + item.quantity, 0)} items)</span>
+                                        <span class="font-semibold">$${subtotal.toFixed(2)}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Shipping</span>
+                                        <span class="font-semibold">${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                        <span class="font-semibold">$${tax.toFixed(2)}</span>
+                                    </div>
+                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                                        <div class="flex justify-between font-bold">
+                                            <span>Total</span>
+                                            <span>$${total.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <div class="flex">
+                                        <input type="text" placeholder="Coupon code" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-darkBg rounded-l focus:outline-none focus:ring-1 focus:ring-primary text-base">
+                                        <button class="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-r transition">
+                                            Apply
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-sm text-gray-600 dark:text-gray-400">
+                                    <p class="flex items-center mb-2">
+                                        <i class="fas fa-lock mr-2 text-green-500"></i> Secure checkout
+                                    </p>
+                                    <p class="flex items-center mb-2">
+                                        <i class="fas fa-undo mr-2"></i> 30-day easy returns
+                                    </p>
+                                    <p class="flex items-center">
+                                        <i class="fas fa-shield-alt mr-2"></i> Full refund if not received
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = content;
+            
+            // Place order function
+            window.placeOrder = function() {
+                // Clear the cart
+                cart = [];
+                updateCartCount();
+                
+                // Show order confirmation
+                mainContent.innerHTML = `
+                    <div class="max-w-xl mx-auto bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden p-8 text-center">
+                        <div class="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-check text-3xl text-green-500 dark:text-green-300"></i>
+                        </div>
+                        <h1 class="text-3xl font-bold mb-4">Order Confirmed!</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">
+                            Thank you for your purchase. Your order has been placed successfully and is being processed.
+                        </p>
+                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                            <h3 class="font-medium mb-2">Order #23987045</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                A confirmation email has been sent to your email address.
+                            </p>
+                        </div>
+                        <button onclick="navigateTo('home')" class="bg-primary hover:bg-primaryHover text-white py-3 px-8 rounded-lg transition">
+                            Continue Shopping
+                        </button>
+                    </div>
+                `;
+            };
+        }
+
+        function loadAccountPage() {
+            const mainContent = document.getElementById('main-content');
+            
+            const content = `
+                <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden">
+                    <div class="md:flex">
+                        <!-- Sidebar -->
+                        <div class="md:w-1/4 border-r border-gray-200 dark:border-gray-700">
+                            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mr-4 text-gray-600 dark:text-gray-400">
+                                        <i class="fas fa-user text-2xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-lg">John Doe</h3>
+                                        <p class="text-gray-600 dark:text-gray-400">john.doe@example.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <nav class="p-4">
+                                <a href="#" class="flex items-center py-3 px-4 rounded-lg bg-primary bg-opacity-10 text-primary">
+                                    <i class="fas fa-user-circle mr-3"></i>
+                                    <span>Account Information</span>
+                                </a>
+                                <a href="#" class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition mt-1">
+                                    <i class="fas fa-shopping-bag mr-3"></i>
+                                    <span>Orders</span>
+                                </a>
+                                <a href="#" class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition mt-1">
+                                    <i class="fas fa-heart mr-3"></i>
+                                    <span>Wishlist</span>
+                                </a>
+                                <a href="#" class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition mt-1">
+                                    <i class="fas fa-map-marker-alt mr-3"></i>
+                                    <span>Addresses</span>
+                                </a>
+                                <a href="#" class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition mt-1">
+                                    <i class="fas fa-credit-card mr-3"></i>
+                                    <span>Payment Methods</span>
+                                </a>
+                                <a href="#" class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition mt-1">
+                                    <i class="fas fa-bell mr-3"></i>
+                                    <span>Notifications</span>
+                                </a>
+                                <div class="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
+                                    <a href="#" class="flex items-center py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-red-500 transition">
+                                        <i class="fas fa-sign-out-alt mr-3"></i>
+                                        <span>Sign Out</span>
+                                    </a>
+                                </div>
+                            </nav>
+                        </div>
+                        
+                        <!-- Main Content -->
+                        <div class="md:w-3/4 p-6">
+                            <h2 class="text-2xl font-bold mb-6">Account Information</h2>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4">Personal Information</h3>
+                                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Name</div>
+                                            <div>John Doe</div>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Email</div>
+                                            <div>john.doe@example.com</div>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Phone</div>
+                                            <div>(555) 123-4567</div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Date of Birth</div>
+                                            <div>January 15, 1985</div>
+                                        </div>
+                                    </div>
+                                    <button class="mt-4 text-primary hover:text-primaryHover transition">
+                                        Edit Personal Information
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4">Security Settings</h3>
+                                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Password</div>
+                                            <div>••••••••</div>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Two-Factor Authentication</div>
+                                            <div>
+                                                <span class="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs py-1 px-2 rounded">
+                                                    Disabled
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-gray-500 dark:text-gray-400 text-sm">Last Password Change</div>
+                                            <div>3 months ago</div>
+                                        </div>
+                                    </div>
+                                    <button class="mt-4 text-primary hover:text-primaryHover transition">
+                                        Change Password
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold mb-4">Default Address</h3>
+                            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                                <div class="flex justify-between mb-2">
+                                    <h4 class="font-medium">Home</h4>
+                                    <div>
+                                        <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-xs py-1 px-2 rounded">
+                                            Default
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-gray-600 dark:text-gray-400">
+                                    <p>John Doe</p>
+                                    <p>123 Main Street, Apt 4B</p>
+                                    <p>New York, NY 10001</p>
+                                    <p>United States</p>
+                                    <p>Phone: (555) 123-4567</p>
+                                </div>
+                                <div class="mt-4 flex space-x-4">
+                                    <button class="text-primary hover:text-primaryHover transition text-sm">
+                                        Edit
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-600 transition text-sm">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button class="bg-primary hover:bg-primaryHover text-white py-2 px-6 rounded-lg transition">
+                                Add New Address
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = content;
+        }
+
+        function loadOrdersPage() {
+            const mainContent = document.getElementById('main-content');
+            
+            const content = `
+                <h1 class="text-3xl font-bold mb-6">My Orders</h1>
+                
+                <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden mb-8">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold">Order #23987045</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Placed on May 15, 2023</p>
+                            </div>
+                            <div class="mt-2 md:mt-0">
+                                <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 py-1 px-3 rounded-full text-sm font-medium">
+                                    Delivered
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Order Total</div>
+                                <div class="font-semibold">$349.97</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Shipping Address</div>
+                                <div>123 Main St, New York, NY 10001</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Payment Method</div>
+                                <div>Credit Card (•••• 4567)</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Delivery Method</div>
+                                <div>Standard Shipping</div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4">
+                                        <img src="${PRODUCTS[0].image}" alt="${PRODUCTS[0].name}" class="max-h-12 max-w-12 object-contain">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium">${PRODUCTS[0].name}</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Qty: 1</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4">
+                                        <img src="${PRODUCTS[7].image}" alt="${PRODUCTS[7].name}" class="max-h-12 max-w-12 object-contain">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium">${PRODUCTS[7].name}</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Qty: 1</p>
+                                    </div>
+                                </div>
+                                <div class="md:flex items-center justify-end hidden">
+                                    <button class="text-primary hover:text-primaryHover transition font-medium">
+                                        View Order Details
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex flex-col md:hidden">
+                                <button class="text-primary hover:text-primaryHover transition font-medium">
+                                    View Order Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden mb-8">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold">Order #23756129</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Placed on April 28, 2023</p>
+                            </div>
+                            <div class="mt-2 md:mt-0">
+                                <span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 py-1 px-3 rounded-full text-sm font-medium">
+                                    In Transit
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Order Total</div>
+                                <div class="font-semibold">$129.99</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Shipping Address</div>
+                                <div>123 Main St, New York, NY 10001</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Payment Method</div>
+                                <div>PayPal</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Delivery Method</div>
+                                <div>Express Shipping</div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4">
+                                        <img src="${PRODUCTS[2].image}" alt="${PRODUCTS[2].name}" class="max-h-12 max-w-12 object-contain">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium">${PRODUCTS[2].name}</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Qty: 1</p>
+                                    </div>
+                                </div>
+                                <div class="md:col-span-1"></div>
+                                <div class="md:flex items-center justify-end hidden">
+                                    <button class="text-primary hover:text-primaryHover transition font-medium">
+                                        View Order Details
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-between md:hidden">
+                                <button class="text-primary hover:text-primaryHover transition font-medium">
+                                    View Order Details
+                                </button>
+                                <button class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition font-medium">
+                                    Track Package
+                                </button>
+                            </div>
+                            <div class="hidden md:flex justify-end mt-4">
+                                <button class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition font-medium">
+                                    Track Package
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-darkSecondary rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold">Order #23489714</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Placed on March 10, 2023</p>
+                            </div>
+                            <div class="mt-2 md:mt-0">
+                                <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 py-1 px-3 rounded-full text-sm font-medium">
+                                    Delivered
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Order Total</div>
+                                <div class="font-semibold">$879.98</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Shipping Address</div>
+                                <div>123 Main St, New York, NY 10001</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Payment Method</div>
+                                <div>Credit Card (•••• 8901)</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm mb-1">Delivery Method</div>
+                                <div>Standard Shipping</div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4">
+                                        <img src="${PRODUCTS[1].image}" alt="${PRODUCTS[1].name}" class="max-h-12 max-w-12 object-contain">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium">${PRODUCTS[1].name}</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Qty: 1</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center mr-4">
+                                        <img src="${PRODUCTS[6].image}" alt="${PRODUCTS[6].name}" class="max-h-12 max-w-12 object-contain">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium">${PRODUCTS[6].name}</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Qty: 1</p>
+                                    </div>
+                                </div>
+                                <div class="md:flex items-center justify-end hidden">
+                                    <button class="text-primary hover:text-primaryHover transition font-medium">
+                                        View Order Details
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-between md:hidden">
+                                <button class="text-primary hover:text-primaryHover transition font-medium">
+                                    View Order Details
+                                </button>
+                                <button class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition font-medium">
+                                    Write a Review
+                                </button>
+                            </div>
+                            <div class="hidden md:flex justify-end mt-4">
+                                <button class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition font-medium">
+                                    Write a Review
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = content;
+        }
+
+        // Initialize the app
+        function initApp() {
+            initTheme();
+            updateCartCount();
+            loadPage();
+        }
+
+        // Start the app
+        initApp();
+    </script>
+</body>
+</html>
